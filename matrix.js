@@ -3,39 +3,49 @@ class Matrix {
     constructor(rows, cols) {
         this.rows = rows;
         this.cols = cols;
-        this.matrix = [];
+        this.data = [];
 
         //* Add Rows
         for (let i = 0; i < this.rows; i++) {
-            this.matrix[i] = [];
+            this.data[i] = [];
             for (let j = 0; j < this.cols; j++) {
-                this.matrix[i][j] = 0
+                this.data[i][j] = 0
             }
         }
     }
 
     add(n) {
-        switch (n instanceof Matrix) {
+
+        let result = new Matrix(this.rows, this.cols);
+        if (n instanceof Matrix) {
             //* Element-wise Operation
-            case true:
-                for (let i = 0; i < this.rows; i++) {
-                    for (let j = 0; j < this.cols; j++) {
-                        this.matrix[i][j] += n.matrix[i][j];
-                    }
+            for (let i = 0; i < this.rows; i++) {
+                for (let j = 0; j < this.cols; j++) {
+                    result[i][j] = this.data[i][j] + n.data[i][j];
                 }
-                break;
-            
+            }
+        } else {
             //* Scalor Operation
-            case false:
-                for (let i = 0; i < this.rows; i++) {
-                    for (let j = 0; j < this.cols; j++) {
-                        this.matrix[i][j] += n;
-                    }
+            for (let i = 0; i < this.rows; i++) {
+                for (let j = 0; j < this.cols; j++) {
+                    result[i][j] = this.data[i][j] + n;
                 }
-                return this;
-                break;
+            }
         }
 
+        return result;
+
+    }
+
+    transpose() {
+        //* make the rows into columns
+        let result = new Matrix(this.cols, this.rows);
+        for (let i = 0; i < this.rows; i++) {
+            for (let j = 0; j < this.cols; j++) { 
+                result.data[j][i] = this.data[i][j];
+            }
+        }
+        return result;
     }
 
     multiply(n) {
@@ -53,9 +63,9 @@ class Matrix {
                 for (let j = 0; j < result.cols; j++) {
                     let sum = 0;
                     for (let k = 0; k < a.cols; k++) {
-                        sum += a.matrix[i][k] * b.matrix[k][j];
+                        sum += a.data[i][k] * b.data[k][j];
                     }
-                    result.matrix[i][j] = sum;
+                    result.data[i][j] = sum;
                 }
             }
             return result;
@@ -63,7 +73,7 @@ class Matrix {
             //* Scalor Operation
             for (let i = 0; i < this.rows; i++) {
                 for (let j = 0; j < this.cols; j++) {
-                    this.matrix[i][j] += n;
+                    this.data[i][j] += n;
                 }
             }
             return this;
@@ -74,7 +84,7 @@ class Matrix {
     randomize() {
         for (let i = 0; i < this.rows; i++) {
             for (let j = 0; j < this.cols; j++) {
-                this.matrix[i][j] = Math.floor(Math.random() * 10);
+                this.data[i][j] = Math.floor(Math.random() * 10);
             }
         }
         return this;
