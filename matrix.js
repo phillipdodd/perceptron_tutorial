@@ -45,6 +45,25 @@ class Matrix {
 
         return result;
     }
+    
+    static fromArray(arr) {
+        //* rows based on length and 1 column
+        let m = new Matrix(arr.length, 1);
+        for (var i = 0; i < arr.length; i++) {
+            m.data[i][0] = arr[i];
+        }
+        return m;
+    }
+
+    toArray() {
+        let array = [];
+        for (var i = 0; i < this.rows; i++) {
+            for (var j = 0; j < this.cols; j++) {
+                array.push(this.data[i][j]);
+            }
+        }
+        return array;
+    }
 
     add(n) {
 
@@ -104,7 +123,7 @@ class Matrix {
     randomize() {
         for (let i = 0; i < this.rows; i++) {
             for (let j = 0; j < this.cols; j++) {
-                this.data[i][j] = Math.floor(Math.random() * 10);
+                this.data[i][j] = Math.random() * 2 - 1;
             }
         }
         return this;
