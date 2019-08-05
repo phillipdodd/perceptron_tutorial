@@ -60,6 +60,7 @@ class Matrix {
     }
     
     static fromArray(arr) {
+        console.log(arr.length)
         //* rows based on length and 1 column
         let m = new Matrix(arr.length, 1);
         for (var i = 0; i < arr.length; i++) {
@@ -106,10 +107,10 @@ class Matrix {
             throw new Error("Arg of type Matrix required");
         }
         //* make the rows into columns
-        let result = new Matrix(this.cols, this.rows);
-        for (let i = 0; i < this.rows; i++) {
-            for (let j = 0; j < this.cols; j++) {
-                result.data[j][i] = this.data[i][j];
+        let result = new Matrix(matrix.cols, matrix.rows);
+        for (let i = 0; i < matrix.rows; i++) {
+            for (let j = 0; j < matrix.cols; j++) {
+                result.data[j][i] = matrix.data[i][j];
             }
         }
         return result;
@@ -126,11 +127,32 @@ class Matrix {
         return this;
     }
 
+    static map(matrix, fn) {
+        let result = new Matrix(matrix.rows, matrix.cols);
+        //* Apply a function to every element of a matrix
+        for (let i = 0; i < matrix.rows; i++) {
+            for (let j = 0; j < matrix.cols; j++) {
+                let val = matrix.data[i][j];
+                result.data[i][j] += fn(val);
+            }
+        }
+        return result;
+    }
+
     multiply(n) {
-        //* Scalor Operation
-        for (let i = 0; i < this.rows; i++) {
-            for (let j = 0; j < this.cols; j++) {
-                this.data[i][j] += n;
+        if (n instanceof Matrix) {
+            //? hadamard product (element-wise)
+            for (let i = 0; i < this.rows; i++) {
+                for (let j = 0; j < this.cols; j++) {
+                    this.data[i][j] *= n.data[i][j];
+                }
+            }
+        } else {
+            //* Scalor Operation
+            for (let i = 0; i < this.rows; i++) {
+                for (let j = 0; j < this.cols; j++) {
+                    this.data[i][j] += n;
+                }
             }
         }
         return this;
