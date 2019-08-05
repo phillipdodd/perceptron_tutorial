@@ -1,8 +1,19 @@
 class Matrix {
 
     constructor(rows, cols) {
-        this.rows = rows;
-        this.cols = cols;
+
+        if (rows && rows > 0) {
+            this.rows = rows;
+        } else {
+            throw new Error("rows arg required")
+        }
+
+        if (cols && cols > 0) {
+            this.cols = cols;
+        } else {
+            throw new Error("rows arg required")
+        }
+
         this.data = [];
 
         //* Add Rows
@@ -14,7 +25,42 @@ class Matrix {
         }
     }
 
+    static multiply(a, b) {
+        if (a.cols !== b.rows) {
+            console.log("Number of Columns of A must match number of rows of B");
+            return undefined;
+        }
+
+        let result = new Matrix(a.rows, b.cols);
+
+        for (let i = 0; i < result.rows; i++) {
+            for (let j = 0; j < result.cols; j++) {
+                let sum = 0;
+                for (let k = 0; k < a.cols; k++) {
+                    sum += a.data[i][k] * b.data[k][j];
+                }
+                result.data[i][j] = sum;
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * @returns {Matrix} a - b
+     */
+    static subtract(a, b) {
+        let result = new Matrix(a.rows, a.cols);
+        for (let i = 0; i < result.rows; i++) {
+            for (let j = 0; j < result.cols; j++) {
+                result.data[i][j] = a.data[i][j] - b.data[i][j]
+            }
+        }
+        return result;
+    }
+    
     static fromArray(arr) {
+        console.log(arr.length)
         //* rows based on length and 1 column
         let m = new Matrix(arr.length, 1);
         for (var i = 0; i < arr.length; i++) {
@@ -40,14 +86,14 @@ class Matrix {
             //* Element-wise Operation
             for (let i = 0; i < this.rows; i++) {
                 for (let j = 0; j < this.cols; j++) {
-                    result[i][j] = this.data[i][j] + n.data[i][j];
+                    result.data[i][j] = this.data[i][j] + n.data[i][j];
                 }
             }
         } else {
             //* Scalor Operation
             for (let i = 0; i < this.rows; i++) {
                 for (let j = 0; j < this.cols; j++) {
-                    result[i][j] = this.data[i][j] + n;
+                    result.data[i][j] = this.data[i][j] + n;
                 }
             }
         }
@@ -56,12 +102,38 @@ class Matrix {
 
     }
 
-    transpose() {
+    static transpose(matrix) {
+        if (!matrix instanceof Matrix) {
+            throw new Error("Arg of type Matrix required");
+        }
         //* make the rows into columns
-        let result = new Matrix(this.cols, this.rows);
+        let result = new Matrix(matrix.cols, matrix.rows);
+        for (let i = 0; i < matrix.rows; i++) {
+            for (let j = 0; j < matrix.cols; j++) {
+                result.data[j][i] = matrix.data[i][j];
+            }
+        }
+        return result;
+    }
+
+    map(fn) {
+        //* Apply a function to every element of a matrix
         for (let i = 0; i < this.rows; i++) {
-            for (let j = 0; j < this.cols; j++) { 
-                result.data[j][i] = this.data[i][j];
+            for (let j = 0; j < this.cols; j++) {
+                let val = this.data[i][j];
+                this.data[i][j] += fn(val);
+            }
+        }
+        return this;
+    }
+
+    static map(matrix, fn) {
+        let result = new Matrix(matrix.rows, matrix.cols);
+        //* Apply a function to every element of a matrix
+        for (let i = 0; i < matrix.rows; i++) {
+            for (let j = 0; j < matrix.cols; j++) {
+                let val = matrix.data[i][j];
+                result.data[i][j] += fn(val);
             }
         }
         return result;
@@ -69,25 +141,12 @@ class Matrix {
 
     multiply(n) {
         if (n instanceof Matrix) {
-            //* Matrix Product
-            if (this.cols !== n.rows) {
-                console.log("Number of Columns of A must match number of rows of B");
-                return undefined;
-            }
-            let a = this;
-            let b = n;
-            let result = new Matrix(a.rows, b.cols);
-
-            for (let i = 0; i < result.rows; i++) {
-                for (let j = 0; j < result.cols; j++) {
-                    let sum = 0;
-                    for (let k = 0; k < a.cols; k++) {
-                        sum += a.data[i][k] * b.data[k][j];
-                    }
-                    result.data[i][j] = sum;
+            //? hadamard product (element-wise)
+            for (let i = 0; i < this.rows; i++) {
+                for (let j = 0; j < this.cols; j++) {
+                    this.data[i][j] *= n.data[i][j];
                 }
             }
-            return result;
         } else {
             //* Scalor Operation
             for (let i = 0; i < this.rows; i++) {
@@ -95,8 +154,8 @@ class Matrix {
                     this.data[i][j] += n;
                 }
             }
-            return this;
         }
+        return this;
     }
 
     //* Helper Functions
@@ -107,6 +166,10 @@ class Matrix {
             }
         }
         return this;
+    }
+
+    print() {
+        console.table(this.data);
     }
 
 }
