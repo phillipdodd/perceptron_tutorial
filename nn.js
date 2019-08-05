@@ -17,19 +17,20 @@ class NeuralNetwork {
         this.output_nodes = output_nodes;
 
         //* weights between input and hidden layers
-        this.weights_ih = new Matrix(this.input_nodes, this.hidden_nodes);
+        this.weights_ih = new Matrix(this.hidden_nodes, this.input_nodes);
         this.weights_ih.randomize();
 
         //* weights between hidden and output layers
-        this.weights_ho = new Matrix(this.hidden_nodes, this.output_nodes);
+        this.weights_ho = new Matrix(this.output_nodes, this.hidden_nodes);
         this.weights_ho.randomize();
 
         this.bias_h = new Matrix(this.hidden_nodes, 1);
         this.bias_h.randomize();
-        this.bias_o = new Matrix(this.hidden_nodes, 1);
+
+        this.bias_o = new Matrix(this.output_nodes, 1);
         this.bias_o.randomize();
 
-        this.learningRate = 0.1;
+        this.learningRate = 0.05;
     }
 
     feedforward(input_array) {
@@ -53,45 +54,35 @@ class NeuralNetwork {
 
     train(input_array, target_array) {
         // let outputs = this.feedforward(inputs);
-        let input = Matrix.fromArray(input_array);
+        let inputs = Matrix.fromArray(input_array);
 
         //* Generate Hidden Outputs
-        let hidden = Matrix.multiply(this.weights_ih, input);
+        let hidden = Matrix.multiply(this.weights_ih, inputs);
         hidden.add(this.bias_h);
 
         //* Pass through activation function
         hidden.map(sigmoid);
-        console.log('hidden')
-        console.table(hidden.data)
 
         //* Generate the Output's Output
         let outputs = Matrix.multiply(this.weights_ho, hidden);
         outputs.add(this.bias_o);
-        
+
         //* Pass through activation function
         outputs.map(sigmoid);
-        console.log('outputs')
-        console.table(outputs.data)
 
         //* Convert array to matrix object
         let targets = Matrix.fromArray(target_array)
 
         //* Calculate the error
         // ERROR = TARGETS - OUTPUTS
-        console.log(`targets.rows: ${targets.rows} outputs.rows: ${outputs.rows}`);
-
         let output_errors = Matrix.subtract(targets, outputs);
-        console.log('output_errors')
-        console.table(output_errors.data)
 
         //* Calculate gradient
         let gradients = Matrix.map(outputs, dsigmoid);
         gradients.multiply(output_errors);
         gradients.multiply(this.learningRate);
-        console.log('gradients')
-        console.table(gradients.data)
 
-        
+
         //* Calculate hidden -> output deltas
         let hidden_T = Matrix.transpose(hidden);
         let weights_ho_deltas = Matrix.multiply(gradients, hidden_T);
@@ -102,7 +93,7 @@ class NeuralNetwork {
 
         //* Adjust the bias by its deltas (which are just the gradients)
         this.bias_o.add(gradients);
-        
+
         // TODO create a loop to handle the multiple hidden layers
         //* Calculate the hidden layer errors
         let transposed_weights_ho = Matrix.transpose(this.weights_ho);
@@ -114,18 +105,14 @@ class NeuralNetwork {
         hidden_gradient.multiply(this.learningRate);
 
         //* Calculate input -> hidden deltas
-        let inputs_T = Matrix.transpose(input);
+        let inputs_T = Matrix.transpose(inputs);
         let weights_ih_deltas = Matrix.multiply(hidden_gradient, inputs_T);
 
         //* Adjust the weights of the deltas
         this.weights_ih.add(weights_ih_deltas);
 
         //* Adjust the bias by its deltas (which are just the gradients)
-        this.bias_h.add(gradients);
-
-        outputs.print();
-        targets.print();
-        output_errors.print();
+        this.bias_h.add(hidden_gradient);
     }
 
 }

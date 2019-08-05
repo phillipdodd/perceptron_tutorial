@@ -1,6 +1,5 @@
 console.clear()
-let training_data = [
-    {
+let training_data = [{
         inputs: [1, 0],
         targets: [1]
     },
@@ -19,8 +18,8 @@ let training_data = [
 ];
 
 function setup() {
-    let nn = new NeuralNetwork(2, 2, 2);
-    for (var i = 0; i < 50000; i++) {
+    let nn = new NeuralNetwork(2, 2, 1);
+    for (var i = 0; i < 500000; i++) {
         let data = random(training_data);
         nn.train(data.inputs, data.targets);
     }

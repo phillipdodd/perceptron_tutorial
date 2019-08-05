@@ -60,7 +60,6 @@ class Matrix {
     }
     
     static fromArray(arr) {
-        console.log(arr.length)
         //* rows based on length and 1 column
         let m = new Matrix(arr.length, 1);
         for (var i = 0; i < arr.length; i++) {
@@ -157,6 +156,20 @@ class Matrix {
         }
         return this;
     }
+
+    //   multiply(n) {
+    //       if (n instanceof Matrix) {
+    //           if (this.rows !== n.rows || this.cols !== n.cols) {
+    //               console.log('Columns and Rows of A must match Columns and Rows of B.');
+    //               return;
+    //           }
+    //           // hadamard product
+    //           return this.map((e, i, j) => e * n.data[i][j]);
+    //       } else {
+    //           // Scalar product
+    //           return this.map(e => e * n);
+    //       }
+    //   }
 
     //* Helper Functions
     randomize() {
