@@ -30,7 +30,7 @@ class NeuralNetwork {
         this.bias_o = new Matrix(this.output_nodes, 1);
         this.bias_o.randomize();
 
-        this.learningRate = 0.05;
+        this.learningRate = 0.1;
     }
 
     feedforward(input_array) {
@@ -86,7 +86,6 @@ class NeuralNetwork {
         //* Calculate hidden -> output deltas
         let hidden_T = Matrix.transpose(hidden);
         let weights_ho_deltas = Matrix.multiply(gradients, hidden_T);
-        this.weights_ho.add(weights_ho_deltas);
 
         //* Adjust the weights by the deltas
         this.weights_ho.add(weights_ho_deltas);
